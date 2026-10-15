@@ -8,6 +8,7 @@ and each column represents a single day across all patients.
 """
 
 import numpy as np
+import pytest
 
 
 def load_csv(filename):
@@ -32,3 +33,22 @@ def daily_min(data):
     """Calculate the daily min of a 2d inflammation data array."""
     return np.min(data, axis=0)
 
+def patient_normalise(data):
+    """Normalise patient data from a 2D inflammation data array.
+    
+    NaN values are ignored, and normalised to 0
+
+    String values are ignored, and normalised to 0 NOTE This behaviour could be contested
+
+    Negative values are rounded to 0.
+    """
+    data = data.copy()   #NOTE: This was raised to me as a good point, and in line with the functional programming stuff yestserday. DO NOT MODIFY YOUR DATA IN A FUNCTION! USE A COPY!
+    data[np.isnan(data)] = 0
+    data[data <0] = 0
+    max = np.max(data, axis=1)
+    with np.errstate(invalid='ignore',divide='ignore'):
+        normalised = data/ max[:,np.newaxis]
+    normalised[np.isnan(normalised)] = 0
+    normalised[normalised <0] =0
+
+    return normalised

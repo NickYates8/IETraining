@@ -38,11 +38,22 @@ def patient_normalise(data):
     
     NaN values are ignored, and normalised to 0
 
-    String values are ignored, and normalised to 0 NOTE This behaviour could be contested
+    String values are ignored, and normalised to 0 NOTE This behaviour could be contested, (and not actually done)
 
     Negative values are rounded to 0.
     """
-    data = data.copy()   #NOTE: This was raised to me as a good point, and in line with the functional programming stuff yestserday. DO NOT MODIFY YOUR DATA IN A FUNCTION! USE A COPY!
+    if not isinstance(data, np.ndarray):
+        raise TypeError('data input should be a ndarray') # Handles data not being an array
+    
+    if not np.issubdtype(data.dtype, np.number):
+        raise TypeError('data should contain numeric values') # This handles inputting strings into input data
+
+    if data.ndim != 2: # Ensure input array is of correct dimension
+        raise TypeError('Input data should be array of dimension 2')
+    data = data.copy()#NOTE: This was raised to me as a good point, and in line with the functional programming stuff yestserday. DO NOT MODIFY YOUR DATA IN A FUNCTION! USE A COPY!
+
+    if np.any(data<0):
+        raise ValueError('Inflammation values should not be negative')
     data[np.isnan(data)] = 0
     data[data <0] = 0
     max = np.max(data, axis=1)
